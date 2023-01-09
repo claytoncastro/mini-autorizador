@@ -6,4 +6,6 @@ public interface CartaoRepository {
 
     Cartao save(Cartao cartao);
 
+    Cartao findCartaoByNumeroCartao(String numeroCartao);
+
 }
