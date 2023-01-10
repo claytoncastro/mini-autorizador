@@ -31,4 +31,9 @@ public class MysqlDBCartaoRepository implements CartaoRepository {
         return modelMapper.map(entityFound == null ? new CartaoEntity() : entityFound, Cartao.class);
     }
 
+    @Override
+    public Cartao update(Cartao cartao) {
+        return save(cartao);
+    }
+
 }

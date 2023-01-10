@@ -23,14 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
-import static com.project.autorizador.application.rest.CartaoControllerImpl.CARTOES_URL;
-
 @RestController
 @Tag(name = "Endpoint de Cartões")
-@RequestMapping(path = CARTOES_URL)
-public class CartaoControllerImpl {
-
-    public static final String CARTOES_URL = "v1/cartoes";
+@RequestMapping(path = "/cartoes")
+public class CartaoController {
 
     @Autowired
     private CreateCartaoUseCase createCartaoUseCase;

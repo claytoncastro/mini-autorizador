@@ -8,4 +8,5 @@ public interface CartaoRepository {
 
     Cartao findCartaoByNumeroCartao(String numeroCartao);
 
+    Cartao update(Cartao cartao);
 }
