@@ -5,6 +5,7 @@ import com.project.autorizador.domain.port.repository.CartaoRepository;
 import com.project.autorizador.infrastructure.repository.mysql.repository.entity.CartaoEntity;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class MysqlDBCartaoRepository implements CartaoRepository {
@@ -19,6 +20,7 @@ public class MysqlDBCartaoRepository implements CartaoRepository {
     }
 
     @Override
+    @Transactional
     public Cartao save(Cartao cartao) {
         CartaoEntity entity = modelMapper.map(cartao, CartaoEntity.class);
         CartaoEntity entitySaved = cartaoRepository.save(entity);

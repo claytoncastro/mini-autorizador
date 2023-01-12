@@ -41,7 +41,8 @@ public class TransacaoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Criar novo cartão", description = "Método responsável por criar novo cartão")
+    @Operation(summary = "Realizar transação de valor do cartão",
+            description = "Método responsável por realizar transação de valor do cartão")
     @ApiResponses(value = {@ApiResponse(responseCode = "201", description = "Created")})
     public ResponseEntity<CartaoResponse> save(@RequestBody @Valid CartaoPostRequest cartaoRequest) {
         Double valor = cartaoRequest.getValor();

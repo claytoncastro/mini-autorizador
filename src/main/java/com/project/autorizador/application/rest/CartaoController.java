@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +21,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @Tag(name = "Endpoint de Cartões")
@@ -38,22 +40,22 @@ public class CartaoController {
     private ModelMapper modelMapper;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     @Operation(summary = "Criar novo cartão", description = "Método responsável por criar novo cartão")
     @ApiResponses(value = {@ApiResponse(responseCode = "201", description = "Created")})
     public ResponseEntity<CartaoResponse> save(@RequestBody @Valid CartaoRequest cartaoRequest) {
         Cartao cartaoToSave = modelMapper.map(cartaoRequest, Cartao.class);
         Cartao cartao = createCartaoUseCase.save(cartaoToSave);
-        return new ResponseEntity<>(modelMapper.map(cartao, CartaoResponse.class), HttpStatus.CREATED);
+        return new ResponseEntity<>(modelMapper.map(cartao, CartaoResponse.class), CREATED);
     }
 
     @GetMapping("/{numeroCartao}")
-    @ResponseStatus(HttpStatus.FOUND)
+    @ResponseStatus(OK)
     @Operation(summary = "Obter saldo do Cartão", description = "Método responsável por obter saldo do cartão")
-    @ApiResponses(value = {@ApiResponse(responseCode = "302", description = "Found")})
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "OK")})
     public ResponseEntity<CartaoResponse> obterSaldo(@PathVariable String numeroCartao) {
         Cartao cartao = findCartaoUseCase.obterSaldo(numeroCartao);
-        return new ResponseEntity<>(modelMapper.map(cartao, CartaoResponse.class), HttpStatus.FOUND);
+        return new ResponseEntity<>(modelMapper.map(cartao, CartaoResponse.class), OK);
     }
 
 }
