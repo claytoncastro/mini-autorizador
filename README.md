@@ -24,6 +24,8 @@ Uma transação pode ser autorizada se:
 Caso uma dessas regras não seja atendida, a transação não será autorizada.
 
 ## Demais instruções
+
+#### Cenários possíveis
 Os seguintes cenários são possíveis, nesta ordem:
 
 * Criação de um cartão;
@@ -32,6 +34,17 @@ Os seguintes cenários são possíveis, nesta ordem:
 * Realização de uma transação com senha inválida;
 * Realização de uma transação com cartão inexistente.
 
+#### Pré requisitos para subir a aplicação
+
+* Softwares
+  * Java 11
+  * Maven 3.8.1
+  * Docker
+* Com docker rodando, navegar até a pasta *docker* no *root* dessa aplicação e rodar o comando abaixo:
+  ```
+  docker-compose up
+  ```
+  
 ## Contratos dos serviços
 
 #### Criar uma cartão novo
