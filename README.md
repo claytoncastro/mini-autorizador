@@ -1,136 +1,207 @@
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/claytoncastro/mini-autorizador/maven.yml?label=Build)
 
-#Teste de programação - VR Benefícios
-
-Como parte do processo de seleção, gostaríamos que você desenvolvesse um pequeno sistema, para que possamos ver melhor o seu trabalho.
-
-Fique à vontade para criar a partir dos requisitos abaixo. Se algo não ficou claro, pode assumir o que ficar mais claro para você, e, por favor, *documente suas suposições*.
-
-Crie o projeto no seu Github para que possamos ver os passos realizados (por meio dos commits) para a implementação da solução.
-
-Caso sua solução seja aprovada, faremos uma entrevista contigo, e a utilizaremos durante a entrevista.
-
-Se quiser documentar outros detalhes da sua solução (como *design patterns* e boas práticas utilizadas e outras decisões de projeto) pode mandar ver!
-
 # Mini autorizador
 
-A VR processa todos os dias diversas transações de Vale Refeição e Vale Alimentação, entre outras.
-De forma breve, as transações saem das maquininhas de cartão e chegam até uma de nossas aplicações, conhecida como *autorizador*, que realiza uma série de verificações e análises. Essas também são conhecidas como *regras de autorização*. 
+API de autorização de transações que realiza uma série de verificações e análises. Essas também são conhecidas como *regras de autorização*.
 
-Ao final do processo, o autorizador toma uma decisão, aprovando ou não a transação: 
-* se aprovada, o valor da transação é debitado do saldo disponível do benefício, e informamos à maquininha que tudo ocorreu bem. 
+O autorizador toma uma decisão, aprovando ou não a transação seguindo os seguintes princípios:
+* se aprovada, o valor da transação é debitado do saldo disponível do benefício, e informamos que tudo ocorreu bem.
 * senão, apenas informamos o que impede a transação de ser feita e o processo se encerra.
 
-Sua tarefa será construir um *mini-autorizador*. Este será uma aplicação Spring Boot com interface totalmente REST que permita:
+Esta é uma aplicação Spring Boot com interface totalmente REST que permite:
 
- * a criação de cartões (todo cartão deverá ser criado com um saldo inicial de R$500,00)
- * a obtenção de saldo do cartão
- * a autorização de transações realizadas usando os cartões previamente criados como meio de pagamento
+* a criação de cartões (todo cartão deverá ser criado com um saldo inicial de R$500,00);
+* a obtenção de saldo do cartão;
+* a autorização de transações realizadas usando os cartões previamente criados como meio de pagamento.
 
-## Regras de autorização a serem implementadas
+## Regras de autorização
 
 Uma transação pode ser autorizada se:
-   * o cartão existir
-   * a senha do cartão for a correta
-   * o cartão possuir saldo disponível
+* o cartão existir
+* a senha do cartão for a correta
+* o cartão possuir saldo disponível
 
-Caso uma dessas regras não ser atendida, a transação não será autorizada.
+Caso uma dessas regras não seja atendida, a transação não será autorizada.
 
 ## Demais instruções
+Os seguintes cenários são possíveis, nesta ordem:
 
-O projeto contém um docker-compose.yml com 1 banco de dados relacional e outro não relacional.
-Sinta-se à vontade para utilizar um deles. Se quiser, pode deixar comentado o banco que não for utilizar, mas não altere o que foi declarado para o banco que você selecionou. 
-
-Não é necessário persistir a transação. Mas é necessário persistir o cartão criado e alterar o saldo do cartão caso uma transação ser autorizada pelo sistema.
-
-Serão analisados o estilo e a qualidade do seu código, bem como as técnicas utilizadas para sua escrita. Ficaremos felizes também se você utilizar testes automatizados como ferramenta auxiliar de criação da solução.
-
-Também, na avaliação da sua solução, serão realizados os seguintes testes, nesta ordem:
-
- * criação de um cartão
- * verificação do saldo do cartão recém-criado
- * realização de diversas transações, verificando-se o saldo em seguida, até que o sistema retorne informação de saldo insuficiente
- * realização de uma transação com senha inválida
- * realização de uma transação com cartão inexistente
-
-Esses testes serão realizados:
-* rodando o docker-compose enviado para você
-* rodando a aplicação 
-
-Para isso, é importante que os contratos abaixo sejam respeitados:
+* Criação de um cartão;
+* Verificação do saldo do cartão recém-criado;
+* Realização de diversas transações, verificando-se o saldo em seguida, até que o sistema retorne informação de saldo insuficiente;
+* Realização de uma transação com senha inválida;
+* Realização de uma transação com cartão inexistente.
 
 ## Contratos dos serviços
 
-### Criar novo cartão
-```
-Method: POST
-URL: http://localhost:8080/cartoes
-Body (json):
-{
-    "numeroCartao": "6549873025634501",
-    "senha": "1234"
-}
-```
-#### Possíveis respostas:
-```
-Criação com sucesso:
+#### Criar uma cartão novo
+---
+* **Criar novo cartão**
+   ```
+   Method: POST
+   URL: http://localhost:8080/cartoes
+   Body (json):
+   {
+      "numeroCartao": "6549873025634501",
+      "senha": "1234"
+   }
+   ```
+#### Possíveis respostas
+
+* **Criação com sucesso**
+   ```
    Status Code: 201
    Body (json):
    {
       "senha": "1234",
       "numeroCartao": "6549873025634501"
    } 
------------------------------------------
-Caso o cartão já exista:
+   ```
+
+* **Cartão já exista**
+   ```
+   {
+      "title": "Recurso já existe!!",
+      "status": 422,
+      "detail": "Cartão com número '87652453112355' já existe!",
+      "timestamp": 1673617944174,
+      "developerMessage": "ResourceAlreadyExistException"
+   }
+   ```
+
+* **Caso seja passado no body algum campo vazio ou nulo**
+   ```
    Status Code: 422
    Body (json):
    {
-      "senha": "1234",
-      "numeroCartao": "6549873025634501"
-   } 
-```
+      "title": "Erro de validação de campo",
+      "status": 400,
+      "detail": "Erro de validação de campo",
+      "timestamp": 1673544053244,
+      "developerMessage": "MethodArgumentNotValidException",
+      "field": "senha, numeroCartao",
+      "fieldMessage": "Campo 'senha' não pode ser branco ou nulo, Campo 'numeroCartao' não pode ser branco ou nulo"
+   }
+   ```
 
-### Obter saldo do Cartão
-```
-Method: GET
-URL: http://localhost:8080/cartoes/{numeroCartao} , onde {numeroCartao} é o número do cartão que se deseja consultar
-```
+#### Saldo do Cartão
+---
+* **Obter saldo do cartão**
+   ```
+   Method: GET
+   URL: http://localhost:8080/cartoes/{numeroCartao} , onde {numeroCartao} é o número do cartão que se deseja consultar
+   ```
 
-#### Possíveis respostas:
-```
-Obtenção com sucesso:
+#### Possíveis respostas
+
+* **Obtenção com sucesso**
+   ```
    Status Code: 200
-   Body: 495.15 
------------------------------------------
-Caso o cartão não exista:
-   Status Code: 404 
-   Sem Body
-```
+   Body (json):
+   {
+      "numeroCartao": "87652453112355",
+      "saldo": 479.5
+   }
+   ```
+* **Caso o cartão não exista**
+   ```
+   Status Code: 404
+   Body (json):
+   {
+      "title": "Recurso não existe!!",
+      "status": 404,
+      "detail": "Cartão com número '876524531123551' não existe!",
+      "timestamp": 1673618654730,
+      "developerMessage": "ResourceNotFoundException"
+   }
+   ```
 
-### Realizar uma Transação
-```
-Method: POST
-URL: http://localhost:8080/transacoes
-Body (json):
-{
-    "numeroCartao": "6549873025634501",
-    "senhaCartao": "1234",
-    "valor": 10.00
-}
-```
+#### Realizar uma Transação
+---
+* **Realizar transação**
+   ```
+   Method: POST
+   URL: http://localhost:8080/transacoes
+   Body (json):
+   {
+      "numeroCartao": "6549873025634501",
+      "senhaCartao": "1234",
+      "valor": 10.00
+   }
+   ```
 
-#### Possíveis respostas:
-```
-Transação realizada com sucesso:
+#### Possíveis respostas
+
+* **Transação realizada com sucesso**
+   ```
    Status Code: 201
-   Body: OK 
------------------------------------------
-Caso alguma regra de autorização tenha barrado a mesma:
-   Status Code: 422 
-   Body: SALDO_INSUFICIENTE|SENHA_INVALIDA|CARTAO_INEXISTENTE (dependendo da regra que impediu a autorização)
-```
+   Body (json):
+   {
+      "numeroCartao": "87652453112355",
+      "saldo": 459.0
+   }
+   ```
+* **Caso seja passado no body algum campo vazio ou nulo**
+   ```
+   Status Code: 422
+   Body (json):
+   {
+      "title": "Erro de validação de campo",
+      "status": 400,
+      "detail": "Erro de validação de campo",
+      "timestamp": 1673544053244,
+      "developerMessage": "MethodArgumentNotValidException",
+      "field": "senha, numeroCartao",
+      "fieldMessage": "Campo 'senha' não pode ser branco ou nulo, Campo 'numeroCartao' não pode ser branco ou nulo"
+   }
+   ```
 
-Desafios (não obrigatórios): 
- * é possível construir a solução inteira sem utilizar nenhum if. Só não pode usar *break* e *continue*! 
- * como garantir que 2 transações disparadas ao mesmo tempo não causem problemas relacionados à concorrência?
-Exemplo: dado que um cartão possua R$10.00 de saldo. Se fizermos 2 transações de R$10.00 ao mesmo tempo, em instâncias diferentes da aplicação, como o sistema deverá se comportar?
+* **Caso o saldo seja insuficiente**
+   ```
+   Status Code: 422
+   Body (json):
+   {
+      "title": "Recurso não pode ser processado!!",
+      "status": 422,
+      "detail": "Saldo insuficiente. Saldo atual '459.0', valor solicitado '500.0'",
+      "timestamp": 1673619604547,
+      "developerMessage": "ResourceUnprocessableException"
+   }
+   ```
+
+* **Caso a senha seja inválida**
+   ```
+   Status Code: 422
+   Body (json):
+   {
+      "title": "Recurso não pode ser processado!!",
+      "status": 422,
+      "detail": "Senha inválida!",
+      "timestamp": 1673619645398,
+      "developerMessage": "ResourceUnprocessableException"
+   }
+   ```
+
+* **Caso o cartão seja inexistente**
+   ```
+   Status Code: 404
+   Body (json):
+   {
+      "title": "Recurso não existe!!",
+      "status": 404,
+      "detail": "Cartão com número '8765245311235511' não existe!",
+      "timestamp": 1673619676581,
+      "developerMessage": "ResourceNotFoundException"
+   }
+   ```
+
+### Documentação
+#### Swagger
+A documentação das requisições podem ser acessadas através do *Swagger*, conforme link:
+
+* **[Documentação Swagger](localhost:8080/swagger-ui.html)**
+
+#### Postman Collection
+Você também pode baixar a *collection* do *Postman*, importar e testar via Postman
+
+* **[Postman Collection](localhost:8080/swagger-ui.html)**
