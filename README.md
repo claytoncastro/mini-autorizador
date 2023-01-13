@@ -199,9 +199,9 @@ Os seguintes cenários são possíveis, nesta ordem:
 #### Swagger
 A documentação das requisições podem ser acessadas através do *Swagger*, conforme link:
 
-* **[Documentação Swagger](localhost:8080/swagger-ui.html)**
+* **[Documentação Swagger](http://localhost:8080/swagger-ui.html)**
 
 #### Postman Collection
 Você também pode baixar a *collection* do *Postman*, importar e testar via Postman
 
-* **[Postman Collection](localhost:8080/swagger-ui.html)**
+* **[Postman Collection](https://github.com/claytoncastro/mini-autorizador/blob/main/src/main/resources/collection/mini-autorizador.postman_collection.json)**
